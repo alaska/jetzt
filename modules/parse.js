@@ -10,7 +10,7 @@
   var jetzt = window.jetzt;
   var H = jetzt.helpers;
   var config = jetzt.config;
-
+  var hyphenator = jetzt.hyphenate.Hypher();
 
   // splitting long words. Used by the Instructionator.
 
@@ -28,18 +28,26 @@
         result.push(word.substr(dashIdx + 1));
         return H.flatten(result.map(_maybeSplitLongWord));
       } else {
-        var partitions = Math.ceil(word.length / 8);
-        var partitionLength = Math.ceil(word.length / partitions);
-        while (partitions--) {
-          result.push(word.substr(0, partitionLength));
-          word = word.substr(partitionLength);
+        var syllables = hyphenator.hyphenate(word);
+        var pieces = [];
+        var piece = "";
+        for (var i=0; i<syllables.length; i++) {
+            if (piece.length + syllables[i].length > 9) {
+                pieces.push(piece);
+                piece = syllables[i];
+            } else {
+                piece += syllables[i];
+            }
+            if (i == syllables.length-1) {
+                pieces.push(piece);
+            }
         }
-        return result;
-      }
+        return pieces;
+       }   
     } else {
-      return [word];
+        return [word];
     }
-  }
+}
 
   // split a long word into sensible sections
   function splitLongWord (word) {

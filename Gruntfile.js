@@ -17,6 +17,7 @@ module.exports = function(grunt) {
       , 'jetzt-solid.js' : [
             "modules/preamble.js"
           , "modules/helpers.js"
+          , "modules/hyphenate.js"
           , "modules/config.js"
           , "modules/parse.js"
           , "modules/exec.js"
