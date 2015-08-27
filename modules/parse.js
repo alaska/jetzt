@@ -10,8 +10,9 @@
   var jetzt = window.jetzt;
   var H = jetzt.helpers;
   var config = jetzt.config;
-  var hyphenator = jetzt.hyphenate.Hypher();
+  var hyphenator;
 
+  chrome.runtime.sendMessage({req: "language"}, function(response){hyphenator = jetzt.hyphenate.Hypher(response.language);});
   // splitting long words. Used by the Instructionator.
 
   function wordShouldBeSplitUp(word) {
@@ -21,28 +22,13 @@
   function _maybeSplitLongWord (word) {
     if (wordShouldBeSplitUp(word)) {
       var result = [];
-
       var dashIdx = word.indexOf("-");
       if (dashIdx > 0 && dashIdx < word.length - 1) {
         result.push(word.substr(0, dashIdx));
         result.push(word.substr(dashIdx + 1));
         return H.flatten(result.map(_maybeSplitLongWord));
       } else {
-        var syllables = hyphenator.hyphenate(word);
-        var pieces = [];
-        var piece = "";
-        for (var i=0; i<syllables.length; i++) {
-            if (piece.length + syllables[i].length > 9) {
-                pieces.push(piece);
-                piece = syllables[i];
-            } else {
-                piece += syllables[i];
-            }
-            if (i == syllables.length-1) {
-                pieces.push(piece);
-            }
-        }
-        return pieces;
+        return hyphenator.getWordPieces(word, 9);
        }   
     } else {
         return [word];

@@ -22,3 +22,14 @@ chrome.contextMenus.onClicked.addListener(function(data) {
     });
   }
 });
+
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+    switch (request.req) {
+        case "language":
+            chrome.tabs.detectLanguage(sender.tab.id, function(language){
+                sendResponse({language: language});
+            });
+            break;
+    }
+    return true;
+});
